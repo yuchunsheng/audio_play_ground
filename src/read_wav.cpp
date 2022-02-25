@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "read_wav.h"
+#include "AudioFile.h"
 
 using std::cin;
 using std::cout;
@@ -10,16 +11,38 @@ using std::endl;
 using std::fstream;
 using std::string;
 
-// find the file size
-int getFileSize(FILE* inFile)
-{
-    int fileSize = 0;
-    fseek(inFile, 0, SEEK_END);
 
-    fileSize = ftell(inFile);
+int read_wav_header(string file_path){
+    wav_hdr wav_header;
+    int headerSize = sizeof(wav_hdr), filelength = 0;
+    std::cout << "RIFF size:" << sizeof(wav_header.RIFF) << std::endl;
 
-    fseek(inFile, 0, SEEK_SET);
-    return fileSize;
+    std::ifstream wav_stream(file_path, std::ifstream::binary | std::ifstream::in);
+
+    if(wav_stream.good()){
+        wav_stream.read(reinterpret_cast<char*>(&wav_header), headerSize );
+        std::streamsize bytes = wav_stream.gcount();
+
+        std::cout << "Read: d=" << wav_header.RIFF  << std::endl; 
+        std::cout<< "chunksize =" << wav_header.ChunkSize << std::endl;
+        std::cout << "AudioFormat" <<wav_header.AudioFormat << std::endl;
+        std::cout << "NumOfChan" <<wav_header.NumOfChan << std::endl;
+        std::cout << "SamplesPerSec" <<wav_header.SamplesPerSec << std::endl;
+        std::cout << "bytesPerSec" <<wav_header.bytesPerSec << std::endl;
+        std::cout << "blockAlign" <<wav_header.blockAlign << std::endl;
+
+        std::cout << "Subchunk2ID="<< wav_header.Subchunk2ID << std::endl;
+        std::cout << "Subchunk2Size=" << wav_header.Subchunk2Size << std::endl;
+
+        std::cout << "bytes read: " << bytes << std::endl;
+
+        int current_position = wav_stream.tellg();
+        std::cout << "current position " << current_position << std::endl;
+
+    }
+    wav_stream.close();
+    return 0;
+
 }
 
 int read_wav_ifstream(string file_path){
@@ -55,8 +78,8 @@ int read_wav_ifstream(string file_path){
 
         std::cout << "value: " << wav_data[200] << std::endl;
 
-        std::cout << "max = " << *std::max_element(wav_data, wav_data+8000) << std::endl;
-        std::cout << "max = " << *std::min_element(wav_data, wav_data+8000) << std::endl;
+        std::cout << "max = " << *std::max_element(wav_data, wav_data+(wav_header.Subchunk2Size/sizeof(uint16_t))) << std::endl;
+        std::cout << "max = " << *std::min_element(wav_data, wav_data+(wav_header.Subchunk2Size/sizeof(uint16_t))) << std::endl;
 
         delete[] wav_data;
 
@@ -64,6 +87,18 @@ int read_wav_ifstream(string file_path){
     
     wav_stream.close();
     return 0;
+}
+
+// find the file size
+int getFileSize(FILE* inFile)
+{
+    int fileSize = 0;
+    fseek(inFile, 0, SEEK_END);
+
+    fileSize = ftell(inFile);
+
+    fseek(inFile, 0, SEEK_SET);
+    return fileSize;
 }
 
 int read_wav_file(const char* filePath){

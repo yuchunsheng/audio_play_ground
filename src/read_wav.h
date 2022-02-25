@@ -27,3 +27,5 @@ int getFileSize(FILE* inFile);
 int read_wav_file(const char* filePath);
 
 int read_wav_ifstream(std::string file_path);
+
+int read_wav_header(std::string file_path);
