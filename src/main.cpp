@@ -23,5 +23,10 @@ int main(int, char**) {
 
     delete reader;
     delete m_write_ring_buffer_accessor;
-    delete[] m_audio_buffers;
+    
+    for (int i = 0; i < AUDIO_BUFFER_COUNT; i++)
+    {
+        delete m_audio_buffers[i] ;
+    }
+
 }
