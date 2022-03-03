@@ -24,12 +24,13 @@ target_sources(audio_main
 
 )
 
-target_link_libraries(audio_main PUBLIC audio_processor)
+target_link_libraries(audio_main PUBLIC audio_processor neural_network)
 
 target_include_directories(audio_main
     PUBLIC 
         ${PROJECT_INCLUDE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/audio_input 
         ${CMAKE_CURRENT_SOURCE_DIR}/audio_process 
-        ${CMAKE_CURRENT_SOURCE_DIR}/utils
+        ${CMAKE_CURRENT_SOURCE_DIR}/utils 
+        ${CMAKE_CURRENT_SOURCE_DIR}/neural_network
 )

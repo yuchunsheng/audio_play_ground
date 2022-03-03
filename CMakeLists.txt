@@ -11,3 +11,4 @@ set(PROJECT_INSTALL_BIN_DIR ${PROJECT_SOURCE_DIR}/bin)
 set(PROJECT_LIB_DIR ${PROJECT_SOURCE_DIR}/lib)
 
 add_subdirectory(src)
+add_subdirectory(lib)
