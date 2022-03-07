@@ -1,5 +1,8 @@
 #include <cstdint>
 #include <fstream>
+#include<vector>
+#include<iostream>
+#include "AudioBufferAccessor.h"
 
 typedef struct  WAV_HEADER
 {
@@ -21,6 +24,7 @@ typedef struct  WAV_HEADER
     uint32_t        Subchunk2Size;  // Sampled data length
 } wav_hdr;
 
+std::string get_audio_format(uint16_t input);
 // Function prototypes
 int getFileSize(FILE* inFile);
 
@@ -29,3 +33,5 @@ int read_wav_file(const char* filePath);
 int read_wav_ifstream(std::string file_path);
 
 int read_wav_header(std::string file_path);
+
+int read_wav_2_audiobuffer(std::string file_path,  AudioBufferAccessor * write_ring_buffer_accessor);

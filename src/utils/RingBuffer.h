@@ -3,6 +3,7 @@
 
 #include <string.h>
 #include <cstdint>
+#include <iostream>
 
 #define SAMPLE_BUFFER_SIZE 1600
 
@@ -36,8 +37,17 @@ public:
         m_number_audio_buffers = number_audio_buffers;
         m_current_buffer = audioBuffers[0];
     }
+    void delete_audioBuffers(){
+        
+        for (int i = 0; i < m_number_audio_buffers; i++)
+        {
+            delete m_audio_buffers[i] ;
+        }
+    }
+
     int getIndex()
     {
+
         return m_buffer_idx * SAMPLE_BUFFER_SIZE + m_buffer_pos;
     }
     void setIndex(int index)
@@ -56,6 +66,8 @@ public:
     }
     inline void setCurrentSample(int16_t sample)
     {
+        std::cout << m_buffer_pos << std::endl;
+        std::cout << m_buffer_idx << std::endl;
         m_current_buffer->samples[m_buffer_pos] = sample;
     }
     inline void rewind(int samples) {

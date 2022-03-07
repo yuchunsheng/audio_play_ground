@@ -5,6 +5,7 @@
 #include "read_wav.h"
 #include "AudioFile.h"
 
+
 using std::cin;
 using std::cout;
 using std::endl;
@@ -12,6 +13,69 @@ using std::fstream;
 using std::string;
 
 
+
+
+std::string get_audio_format(uint16_t input){
+    std::string result ;
+    switch(input){
+        case(1):
+            result = "PCM";
+            break;
+        case(3):
+            result = "IEEE float";
+            break;
+        default:
+            result = "others";
+            break;
+    }
+
+    return result;
+}
+
+void add_sample(int16_t sample, AudioBufferAccessor *write_ring_buffer_accessor)
+{
+    std::cout << write_ring_buffer_accessor << " buffer pointer in addSample" << std::endl;
+    // store the sample
+    write_ring_buffer_accessor->setCurrentSample(sample);
+    if (write_ring_buffer_accessor->moveToNextSample())
+    {
+        // trigger the processor task as we've filled a buffer
+        std::cout << "move the next index" << std::endl;
+    }
+}
+
+int read_wav_2_audiobuffer(string file_path, AudioBufferAccessor * write_ring_buffer_accessor){
+    wav_hdr wav_header;
+    int headerSize = sizeof(wav_hdr), filelength = 0;
+    std::ifstream wav_stream(file_path, std::ifstream::binary | std::ifstream::in);
+    if(wav_stream.good()){
+        wav_stream.read(reinterpret_cast<char*>(&wav_header), headerSize );
+        std::cout << "AudioFormat: " <<get_audio_format(wav_header.AudioFormat) << std::endl;
+        std::cout << "NumOfChan: " <<wav_header.NumOfChan << std::endl;
+        std::cout << "SamplesPerSec: " <<wav_header.SamplesPerSec << std::endl;
+        std::cout << "bytesPerSec: " <<wav_header.bytesPerSec << std::endl;
+        std::cout << "Subchunk2ID="<< wav_header.Subchunk2ID << std::endl;
+        std::cout << "Subchunk2Size=" << wav_header.Subchunk2Size << std::endl;
+
+        if((get_audio_format(wav_header.AudioFormat) == "PCM") && (wav_header.NumOfChan == 1)){
+            int byte_length =  wav_header.bytesPerSec/wav_header.SamplesPerSec;
+            if(byte_length == 2){
+                int data_length = (wav_header.Subchunk2Size/byte_length);
+                int16_t*  wav_data = new int16_t[data_length];      
+                wav_stream.read(reinterpret_cast<char*>(wav_data),wav_header.Subchunk2Size);
+                std::cout << write_ring_buffer_accessor << " buffer pointer" << std::endl;
+                // add_sample(wav_data[0], write_ring_buffer_accessor);
+                for(int i = 0 ; i <= data_length; i++){
+                   add_sample(wav_data[i], write_ring_buffer_accessor);
+                }
+
+                delete[] wav_data;
+                std::cout << "good, no issues" << std::endl;
+            }
+        }
+    }
+    return 0;
+}
 int read_wav_header(string file_path){
     wav_hdr wav_header;
     int headerSize = sizeof(wav_hdr), filelength = 0;
@@ -25,11 +89,11 @@ int read_wav_header(string file_path){
 
         std::cout << "Read: d=" << wav_header.RIFF  << std::endl; 
         std::cout<< "chunksize =" << wav_header.ChunkSize << std::endl;
-        std::cout << "AudioFormat" <<wav_header.AudioFormat << std::endl;
-        std::cout << "NumOfChan" <<wav_header.NumOfChan << std::endl;
-        std::cout << "SamplesPerSec" <<wav_header.SamplesPerSec << std::endl;
-        std::cout << "bytesPerSec" <<wav_header.bytesPerSec << std::endl;
-        std::cout << "blockAlign" <<wav_header.blockAlign << std::endl;
+        std::cout << "AudioFormat: " <<get_audio_format(wav_header.AudioFormat) << std::endl;
+        std::cout << "NumOfChan: " <<wav_header.NumOfChan << std::endl;
+        std::cout << "SamplesPerSec: " <<wav_header.SamplesPerSec << std::endl;
+        std::cout << "bytesPerSec: " <<wav_header.bytesPerSec << std::endl;
+        std::cout << "blockAlign: " <<wav_header.blockAlign << std::endl;
 
         std::cout << "Subchunk2ID="<< wav_header.Subchunk2ID << std::endl;
         std::cout << "Subchunk2Size=" << wav_header.Subchunk2Size << std::endl;
@@ -58,10 +122,10 @@ int read_wav_ifstream(string file_path){
 
         std::cout << "Read: d=" << wav_header.RIFF  << std::endl; 
         std::cout<< "chunksize =" << wav_header.ChunkSize << std::endl;
-        std::cout << "AudioFormat" <<wav_header.AudioFormat << std::endl;
-        std::cout << "NumOfChan" <<wav_header.NumOfChan << std::endl;
-        std::cout << "SamplesPerSec" <<wav_header.SamplesPerSec << std::endl;
-        std::cout << "bytesPerSec" <<wav_header.bytesPerSec << std::endl;
+        std::cout << "AudioFormat: " <<get_audio_format(wav_header.AudioFormat)<< std::endl;
+        std::cout << "NumOfChan: " <<wav_header.NumOfChan << std::endl;
+        std::cout << "SamplesPerSec: " <<wav_header.SamplesPerSec << std::endl;
+        std::cout << "bytesPerSec: " <<wav_header.bytesPerSec << std::endl;
         std::cout << "Subchunk2ID="<< wav_header.Subchunk2ID << std::endl;
         std::cout << "Subchunk2Size=" << wav_header.Subchunk2Size << std::endl;
 
