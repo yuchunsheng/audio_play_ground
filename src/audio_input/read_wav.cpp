@@ -34,13 +34,14 @@ std::string get_audio_format(uint16_t input){
 
 void add_sample(int16_t sample, AudioBufferAccessor *write_ring_buffer_accessor)
 {
-    std::cout << write_ring_buffer_accessor << " buffer pointer in addSample" << std::endl;
+    // std::cout << write_ring_buffer_accessor << " buffer pointer in addSample" << std::endl;
     // store the sample
     write_ring_buffer_accessor->setCurrentSample(sample);
     if (write_ring_buffer_accessor->moveToNextSample())
     {
         // trigger the processor task as we've filled a buffer
-        std::cout << "move the next index" << std::endl;
+        std::cout << write_ring_buffer_accessor->getCurrentPos()<<" is the current pos" << std::endl;
+        std::cout << write_ring_buffer_accessor->getCurrentIndex()<<" is the current index" << std::endl;
     }
 }
 

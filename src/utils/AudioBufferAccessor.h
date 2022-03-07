@@ -53,9 +53,16 @@ class AudioBufferAccessor
             delete[] m_audio_buffers;
         }
 
+        int getCurrentPos(){
+            return m_buffer_pos;
+        }
+
+        int getCurrentIndex(){
+            return m_buffer_idx;
+        }
+
         int getIndex()
         {
-
             return m_buffer_idx * SAMPLE_BUFFER_SIZE + m_buffer_pos;
         }
         void setIndex(int index)
