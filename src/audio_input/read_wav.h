@@ -1,3 +1,6 @@
+#ifndef READ_WAV_H
+#define READ_WAV_H
+
 #include <cstdint>
 #include <fstream>
 #include<vector>
@@ -32,6 +35,9 @@ int read_wav_file(const char* filePath);
 
 int read_wav_ifstream(std::string file_path);
 
+
 int read_wav_header(std::string file_path);
 
 int read_wav_2_audiobuffer(std::string file_path,  AudioBufferAccessor * write_ring_buffer_accessor);
+
+#endif

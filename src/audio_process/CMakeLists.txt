@@ -4,10 +4,12 @@ target_sources(audio_processor
     PRIVATE 
         ${CMAKE_CURRENT_SOURCE_DIR}/AudioProcessor.cpp 
         ${CMAKE_CURRENT_SOURCE_DIR}/HammingWindow.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/AudioDataProcessor.cpp
 
     PUBLIC 
         ${CMAKE_CURRENT_SOURCE_DIR}/AudioProcessor.h
         ${CMAKE_CURRENT_SOURCE_DIR}/HammingWindow.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/AudioDataProcessor.h
 
 )
 message(STATUS "kissfft include dir: ${kissfft_include}")

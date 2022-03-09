@@ -4,6 +4,7 @@
 #include <string.h>
 #include <cstdint>
 #include <iostream>
+#include <queue>
 
 #define SAMPLE_BUFFER_SIZE 1600
 
@@ -26,32 +27,53 @@ class AudioBufferAccessor
         int m_buffer_pos;
         int m_buffer_idx;
         int m_total_size;
+        std::queue<int>* m_index_queue;
 
     public:
-        AudioBufferAccessor(int number_audio_buffers)
+        AudioBufferAccessor(std::queue<int>* index_queue, AudioDataBuffer **audio_buffers, int number_audio_buffers)
         {
             m_buffer_pos = 0;
             m_buffer_idx = 0;
             m_total_size = number_audio_buffers * SAMPLE_BUFFER_SIZE;
             m_number_audio_buffers = number_audio_buffers;
-
-            m_audio_buffers = new AudioDataBuffer *[number_audio_buffers];
-
-            // allocate the audio buffers
-            for (int i = 0; i < number_audio_buffers; i++)
-            {
-                m_audio_buffers[i] = new AudioDataBuffer();
-            }
+            m_audio_buffers = audio_buffers;
+            m_index_queue = index_queue;
             // m_current_buffer = audio_buffers[0];
         }
-
-        void delete_audioBuffers(){
-            for (int i = 0; i < m_number_audio_buffers; i++)
-            {
-                delete(m_audio_buffers[i]);
+      
+        void push_index_to_queue(){
+            // recycle the queue
+            if(m_index_queue->size() >= m_number_audio_buffers){
+                m_index_queue->pop();
             }
-            delete[] m_audio_buffers;
+            m_index_queue->push(m_buffer_idx - 1);
         }
+
+        bool is_queue_empty(){
+            return m_index_queue->empty();
+        }
+
+        int get_first_index_from_queue(){
+            int index = 0;
+            if(!m_index_queue->empty()){
+                index = m_index_queue->front();
+            }
+            return index;
+        }
+
+        int get_start_position_from_queue()
+        {
+            int index = 0;
+            if(!m_index_queue->empty()){
+                index = m_index_queue->front();
+            }
+            return index * SAMPLE_BUFFER_SIZE ;
+        }
+
+        int get_number_audio_buffers(){
+            return m_number_audio_buffers;
+        }
+
 
         int getCurrentPos(){
             return m_buffer_pos;

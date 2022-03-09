@@ -3,7 +3,7 @@
 #include <algorithm>
 
 #include "read_wav.h"
-#include "AudioFile.h"
+// #include "AudioFile.h"
 
 
 using std::cin;
@@ -40,8 +40,12 @@ void add_sample(int16_t sample, AudioBufferAccessor *write_ring_buffer_accessor)
     if (write_ring_buffer_accessor->moveToNextSample())
     {
         // trigger the processor task as we've filled a buffer
-        std::cout << write_ring_buffer_accessor->getCurrentPos()<<" is the current pos" << std::endl;
-        std::cout << write_ring_buffer_accessor->getCurrentIndex()<<" is the current index" << std::endl;
+        // std::cout << write_ring_buffer_accessor->getCurrentPos()<<" is the current pos" << std::endl;
+        // std::cout << write_ring_buffer_accessor->getCurrentIndex()<<" is the current index" << std::endl;
+        // if reach the bottome then rewind
+        
+        // std::cout << temp << " the current index" << std::endl;
+        write_ring_buffer_accessor->push_index_to_queue();
     }
 }
 
@@ -73,6 +77,8 @@ int read_wav_2_audiobuffer(string file_path, AudioBufferAccessor * write_ring_bu
                 delete[] wav_data;
                 std::cout << "good, no issues" << std::endl;
             }
+        }else{
+            std::cout << "wav format is not compatble." << std::endl;
         }
     }
     return 0;

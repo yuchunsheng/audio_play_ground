@@ -1,5 +1,5 @@
-#ifndef AUDIO_PROCESSOR
-#define AUDIO_PROCESSOR
+#ifndef AUDIO_DATA_PROCESSOR_H
+#define AUDIO_DATA_PROCESSOR_H
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -9,7 +9,7 @@
 #include "AudioBufferAccessor.h"
 #include "HammingWindow.h"
 
-class AudioProcessor
+class AudioDataProcessor
 {
 private:
     int m_audio_length;
@@ -29,8 +29,8 @@ private:
     void get_spectrogram_segment(float *output_spectrogram_row);
 
 public:
-    AudioProcessor(int audio_length, int window_size, int step_size, int pooling_size);
-    ~AudioProcessor();
+    AudioDataProcessor(int audio_length, int window_size, int step_size, int pooling_size);
+    ~AudioDataProcessor();
     void get_spectrogram(AudioBufferAccessor *reader, float *output_spectrogram);
 };
 

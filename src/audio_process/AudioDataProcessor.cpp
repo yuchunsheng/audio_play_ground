@@ -1,12 +1,12 @@
 #include <stdlib.h>
 #include <algorithm>
-#include "AudioProcessor.h"
+#include "AudioDataProcessor.h"
 #include "HammingWindow.h"
-#include "RingBuffer.h"
+#include "AudioBufferAccessor.h"
 
 #define EPSILON 1e-6
 
-AudioProcessor::AudioProcessor(int audio_length, int window_size, int step_size, int pooling_size)
+AudioDataProcessor::AudioDataProcessor(int audio_length, int window_size, int step_size, int pooling_size)
 {
     m_audio_length = audio_length;
     m_window_size = window_size;
@@ -17,8 +17,11 @@ AudioProcessor::AudioProcessor(int audio_length, int window_size, int step_size,
     {
         m_fft_size <<= 1;
     }
+    printf("m_fft_size=%lu\n", m_fft_size);
     m_fft_input = static_cast<float *>(malloc(sizeof(float) * m_fft_size));
     m_energy_size = m_fft_size / 2 + 1;
+    printf("m_energy_size=%d\n", m_energy_size);
+
     m_fft_output = static_cast<kiss_fft_cpx *>(malloc(sizeof(kiss_fft_cpx) * m_energy_size));
     m_energy = static_cast<float *>(malloc(sizeof(float) * m_energy_size));
     // work out the pooled energy size
@@ -30,7 +33,7 @@ AudioProcessor::AudioProcessor(int audio_length, int window_size, int step_size,
     m_hamming_window = new HammingWindow(m_window_size);
 }
 
-AudioProcessor::~AudioProcessor()
+AudioDataProcessor::~AudioDataProcessor()
 {
     free(m_cfg);
     free(m_fft_input);
@@ -40,7 +43,7 @@ AudioProcessor::~AudioProcessor()
 }
 
 // takes a normalised array of input samples of window_size length
-void AudioProcessor::get_spectrogram_segment(float *output)
+void AudioDataProcessor::get_spectrogram_segment(float *output)
 {
     // apply the hamming window to the samples
     m_hamming_window->applyWindow(m_fft_input);
@@ -81,9 +84,11 @@ void AudioProcessor::get_spectrogram_segment(float *output)
     }
 }
 
-void AudioProcessor::get_spectrogram(AudioBufferAccessor *reader, float *output_spectrogram)
+void AudioDataProcessor::get_spectrogram(AudioBufferAccessor *reader, float *output_spectrogram)
 {
-    int startIndex = reader->getIndex();
+    int start_position = reader->get_start_position_from_queue();
+    reader->setIndex(start_position);
+
     // get the mean value of the samples
     float mean = 0;
     for (int i = 0; i < m_audio_length; i++)
@@ -93,15 +98,22 @@ void AudioProcessor::get_spectrogram(AudioBufferAccessor *reader, float *output_
     }
     mean /= m_audio_length;
     // get the absolute max value of the samples taking into account the mean value
-    reader->setIndex(startIndex);
+    reader->setIndex(start_position);
     float max = 0;
     for (int i = 0; i < m_audio_length; i++)
     {
         max = std::max(max, fabsf(((float)reader->getCurrentSample()) - mean));
         reader->moveToNextSample();
     }
+
+    std::cout << "mean =" << mean << std::endl;
+    std::cout << "max=" << max << std::endl;
+
+    std::cout << "start index=" << start_position << std::endl;
+
+
     // extract windows of samples moving forward by step size each time and compute the spectrum of the window
-    for (int window_start = startIndex; window_start < startIndex + 16000 - m_window_size; window_start += m_step_size)
+    for (int window_start = start_position; window_start < start_position + 16000 - m_window_size; window_start += m_step_size)
     {
         // move the reader to the start of the window
         reader->setIndex(window_start);
