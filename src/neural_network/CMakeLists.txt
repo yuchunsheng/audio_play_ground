@@ -3,12 +3,16 @@ add_library(neural_network "")
 
 target_sources(neural_network
     PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/hello_world_test.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/model.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/model.h
+        # ${CMAKE_CURRENT_SOURCE_DIR}/hello_world_test.cpp
+        # ${CMAKE_CURRENT_SOURCE_DIR}/model.cpp
+        # ${CMAKE_CURRENT_SOURCE_DIR}/model.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/command_model.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/speech_command.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/command_model.h
           
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/hello_world_test.h
+        # ${CMAKE_CURRENT_SOURCE_DIR}/hello_world_test.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/speech_command.h
 
 )
 target_link_libraries(neural_network "generic-tflmicro")

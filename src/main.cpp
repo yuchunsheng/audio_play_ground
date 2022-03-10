@@ -3,7 +3,8 @@
 #include "read_wav.h"
 #include "AudioBufferAccessor.h"
 #include "AudioDataProcessor.h"
-#include "hello_world_test.h"
+// #include "hello_world_test.h"
+#include "speech_command.h"
 
 #define WINDOW_SIZE 320
 #define STEP_SIZE 160
@@ -17,6 +18,9 @@
 
 int main(int, char**) {
     std::cout << "Hello, world!\n";
+
+    NeuralNetwork* nn = new NeuralNetwork();
+    
     AudioDataBuffer ** audio_buffers;
     audio_buffers = new AudioDataBuffer *[AUDIO_BUFFER_COUNT];
     std::queue<int> index_queue ;
@@ -36,20 +40,14 @@ int main(int, char**) {
 
     int result = read_wav_2_audiobuffer("/home/ycsheng/disk3T/audio_datasets/speech_commands/test/yes/fa446c16_nohash_0.wav", write_buffer_accessor);
     
-    float  temp[43*98];
+    float *input_buffer = nn->getInputBuffer();
 
     if(index_queue.size()>= 9){
         // std::cout << "the queue is full" << std::endl;
-        audio_processor->get_spectrogram(read_buffer_accessor, temp);
+        audio_processor->get_spectrogram(read_buffer_accessor, input_buffer);
     }
 
-    // while (!write_buffer_accessor->is_queue_empty())
-    // {
-    //     int index = write_buffer_accessor->get_index_from_queue();
-    //     std::cout << index << " is the current index" << std::endl;
-    // }
-    
-
+    //clean up
     for (int i = 0; i < AUDIO_BUFFER_COUNT; i++)
     {
         delete(audio_buffers[i]);
@@ -57,6 +55,18 @@ int main(int, char**) {
     delete[] audio_buffers;
 
     delete(write_buffer_accessor);
+
+    // get the prediction for the spectrogram
+    float output = nn->predict();
+    if (output > 0.95)
+    {
+        std::cout << "command detected confident = "<< output << std::endl;
+    }else{
+        std::cout << "not a command confident = "<<output << std::endl;
+    }
+    
+    delete(nn);
+    
     
     // int result = read_wav_ifstream("/home/ycsheng/disk3T/temp/output1.wav");
     // int reulst = read_wav_ifstream("/home/ycsheng/disk3T/audio_datasets/speech_commands/test/yes/fa446c16_nohash_0.wav");
