@@ -19,6 +19,8 @@
 int main(int, char**) {
     std::cout << "Hello, world!\n";
 
+    // std::string sound_file = "/home/ycsheng/disk3T/audio_datasets/speech_commands/test/yes/fa446c16_nohash_0.wav";
+    std::string sound_file = "/home/ycsheng/disk3T/audio_datasets/speech_commands/train/marvin/fc2411fe_nohash_00ba018fc_nohash_0.wav";
     NeuralNetwork* nn = new NeuralNetwork();
     
     AudioDataBuffer ** audio_buffers;
@@ -38,7 +40,9 @@ int main(int, char**) {
 
     std::cout << write_buffer_accessor << " buffer pointer from main" << std::endl;
 
-    int result = read_wav_2_audiobuffer("/home/ycsheng/disk3T/audio_datasets/speech_commands/test/yes/fa446c16_nohash_0.wav", write_buffer_accessor);
+    // int result = read_wav_2_audiobuffer("/home/ycsheng/disk3T/audio_datasets/speech_commands/test/yes/fa446c16_nohash_0.wav", write_buffer_accessor);
+    int result = read_wav_2_audiobuffer(sound_file, write_buffer_accessor);
+    std::cout << index_queue.size() << std::endl;
     
     float *input_buffer = nn->getInputBuffer();
 
