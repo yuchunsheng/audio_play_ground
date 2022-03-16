@@ -5,6 +5,7 @@ set(utils_include ${CMAKE_CURRENT_SOURCE_DIR}/utils)
 add_subdirectory(KissFFT)
 add_subdirectory(audio_process)
 add_subdirectory(neural_network)
+add_subdirectory(image_processing)
 
 add_executable(audio_main "")
 
@@ -24,7 +25,7 @@ target_sources(audio_main
 
 )
 
-target_link_libraries(audio_main PUBLIC audio_processor neural_network)
+target_link_libraries(audio_main PUBLIC audio_processor neural_network image_processing)
 
 target_include_directories(audio_main
     PUBLIC 
