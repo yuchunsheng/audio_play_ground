@@ -5,6 +5,7 @@
 #include "AudioDataProcessor.h"
 // #include "hello_world_test.h"
 #include "speech_command.h"
+#include "mobilenet.h"
 
 #define WINDOW_SIZE 320
 #define STEP_SIZE 160
@@ -15,10 +16,7 @@
 
 #define AUDIO_BUFFER_COUNT 11  //abut 1 seconds (1600 * 10 )
 
-
-int main(int, char**) {
-    std::cout << "Hello, world!\n";
-
+void run_command(){
     // std::string sound_file = "/home/ycsheng/disk3T/audio_datasets/speech_commands/test/yes/fa446c16_nohash_0.wav";
     std::string sound_file = "/home/ycsheng/disk3T/audio_datasets/speech_commands/train/marvin/fc2411fe_nohash_00ba018fc_nohash_0.wav";
     NeuralNetwork* nn = new NeuralNetwork();
@@ -70,27 +68,26 @@ int main(int, char**) {
     }
     
     delete(nn);
-    
-    
-    // int result = read_wav_ifstream("/home/ycsheng/disk3T/temp/output1.wav");
+}
+
+void read_wav_header(){
+    int result = read_wav_ifstream("/home/ycsheng/disk3T/temp/output1.wav");
     // int reulst = read_wav_ifstream("/home/ycsheng/disk3T/audio_datasets/speech_commands/test/yes/fa446c16_nohash_0.wav");
     // int result = read_wav_file("/home/ycsheng/disk3T/temp/output1.wav");
     // int result = read_wav_header("/home/ycsheng/disk3T/temp/file_example_WAV_1MG.wav");
-    // AudioBuffer *m_audio_buffers[AUDIO_BUFFER_COUNT];
-    // for (int i = 0; i < AUDIO_BUFFER_COUNT; i++)
-    // {
-    //     m_audio_buffers[i] = new AudioBuffer();
-    // }
-    
-    // RingBufferAccessor *reader = new RingBufferAccessor(m_audio_buffers, AUDIO_BUFFER_COUNT);
-    // RingBufferAccessor *m_write_ring_buffer_accessor = new RingBufferAccessor(m_audio_buffers, AUDIO_BUFFER_COUNT);
+}
 
-    // reader->setIndex(m_write_ring_buffer_accessor->getIndex());
+void run_mobilenet(){
+    Mobilenet* nn = new Mobilenet();
+    float *input_buffer = nn->getInputBuffer();
+    
+    delete(nn);
+}
 
-    // delete reader;
-    // delete m_write_ring_buffer_accessor;
+int main(int, char**) {
+    std::cout << "Hello, world!\n";
     
-    
+    run_mobilenet();
     // run_hello_world_test();
     return 0;
 }

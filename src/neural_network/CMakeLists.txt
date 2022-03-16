@@ -9,10 +9,14 @@ target_sources(neural_network
         ${CMAKE_CURRENT_SOURCE_DIR}/command_model.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/speech_command.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/command_model.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/mobilenet.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/mobilenetv1.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/mobilenetv1.h
           
     PUBLIC
         # ${CMAKE_CURRENT_SOURCE_DIR}/hello_world_test.h
         ${CMAKE_CURRENT_SOURCE_DIR}/speech_command.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/mobilenet.h
 
 )
 target_link_libraries(neural_network "generic-tflmicro")
